@@ -90,13 +90,15 @@ contract xSNX is ERC20, ERC20Detailed, Pausable, Ownable {
         uint256 snxBalanceBefore = tradeAccounting.getSnxBalance();
 
         uint256 totalSupply = totalSupply();
-        (bool allocateToEth, uint256 nonSnxAssetValue) = tradeAccounting
-            .getMintWithEthUtils(totalSupply);
+        (bool allocateToEth, uint256 nonSnxAssetValue) =
+            tradeAccounting.getMintWithEthUtils(totalSupply);
 
         if (!allocateToEth) {
-            uint256 snxAcquired = kyberNetworkProxy.swapEtherToToken.value(
-                ethContribution
-            )(ERC20(snxAddress), minRate);
+            uint256 snxAcquired =
+                kyberNetworkProxy.swapEtherToToken.value(ethContribution)(
+                    ERC20(snxAddress),
+                    minRate
+                );
             require(
                 IERC20(snxAddress).transfer(xsnxAdmin, snxAcquired),
                 "Transfer failed"
@@ -106,13 +108,14 @@ contract xSNX is ERC20, ERC20Detailed, Pausable, Ownable {
             require(success, "Transfer failed");
         }
 
-        uint256 mintAmount = tradeAccounting.calculateTokensToMintWithEth(
-            snxBalanceBefore,
-            ethContribution,
-            nonSnxAssetValue,
-            totalSupply,
-            allocateToEth
-        );
+        uint256 mintAmount =
+            tradeAccounting.calculateTokensToMintWithEth(
+                snxBalanceBefore,
+                ethContribution,
+                nonSnxAssetValue,
+                totalSupply,
+                allocateToEth
+            );
 
         emit Mint(msg.sender, block.timestamp, msg.value, mintAmount, true);
         return super._mint(msg.sender, mintAmount);
@@ -145,11 +148,12 @@ contract xSNX is ERC20, ERC20Detailed, Pausable, Ownable {
             "Transfer failed"
         );
 
-        uint256 mintAmount = tradeAccounting.calculateTokensToMintWithSnx(
-            snxBalanceBefore,
-            snxContribution,
-            totalSupply()
-        );
+        uint256 mintAmount =
+            tradeAccounting.calculateTokensToMintWithSnx(
+                snxBalanceBefore,
+                snxContribution,
+                totalSupply()
+            );
 
         emit Mint(
             msg.sender,
@@ -170,10 +174,11 @@ contract xSNX is ERC20, ERC20Detailed, Pausable, Ownable {
     function burn(uint256 tokensToRedeem) external {
         require(tokensToRedeem > 0, "Must burn tokens");
 
-        uint256 valueToRedeem = tradeAccounting.calculateRedemptionValue(
-            totalSupply(),
-            tokensToRedeem
-        );
+        uint256 valueToRedeem =
+            tradeAccounting.calculateRedemptionValue(
+                totalSupply(),
+                tokensToRedeem
+            );
 
         require(
             tradeAccounting.getEthBalance() >= valueToRedeem,
@@ -181,9 +186,8 @@ contract xSNX is ERC20, ERC20Detailed, Pausable, Ownable {
         );
 
         IxSNXAdmin(xsnxAdmin).sendEthOnRedemption(valueToRedeem);
-        uint256 valueToSend = valueToRedeem.sub(
-            calculateFee(valueToRedeem, feeDivisors.burnFee)
-        );
+        uint256 valueToSend =
+            valueToRedeem.sub(calculateFee(valueToRedeem, feeDivisors.burnFee));
         super._burn(msg.sender, tokensToRedeem);
         emit Burn(msg.sender, block.timestamp, tokensToRedeem, valueToSend);
 
@@ -234,9 +238,8 @@ contract xSNX is ERC20, ERC20Detailed, Pausable, Ownable {
      */
     function withdrawFees() public onlyOwner {
         uint256 ethFeesToWithdraw = address(this).balance;
-        uint256 susdFeesToWithdraw = IERC20(susdAddress).balanceOf(
-            address(this)
-        );
+        uint256 susdFeesToWithdraw =
+            IERC20(susdAddress).balanceOf(address(this));
         uint256 snxFeesToWithdraw = IERC20(snxAddress).balanceOf(address(this));
 
         (bool success, ) = msg.sender.call.value(ethFeesToWithdraw)("");

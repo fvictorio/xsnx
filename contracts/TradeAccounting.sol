@@ -274,11 +274,12 @@ contract TradeAccounting is Ownable {
         uint256 snxBalanceOwned = getSnxBalanceOwned();
         uint256 contractDebtValue = getContractDebtValue();
 
-        uint256 pricePerToken = calculateRedeemTokenPrice(
-            totalSupply,
-            snxBalanceOwned,
-            contractDebtValue
-        );
+        uint256 pricePerToken =
+            calculateRedeemTokenPrice(
+                totalSupply,
+                snxBalanceOwned,
+                contractDebtValue
+            );
 
         valueToRedeem = pricePerToken.mul(tokensToRedeem).div(DEC_18);
     }
@@ -343,13 +344,11 @@ contract TradeAccounting is Ownable {
         uint256 snxBalanceBefore,
         uint256 nonSnxAssetValue
     ) internal view returns (uint256) {
-        uint256 snxTokenValueInWei = snxBalanceBefore.mul(weiPerOneSnx).div(
-            DEC_18
-        );
+        uint256 snxTokenValueInWei =
+            snxBalanceBefore.mul(weiPerOneSnx).div(DEC_18);
         uint256 contractDebtValue = getContractDebtValue();
-        uint256 contractDebtValueInWei = calculateDebtValueInWei(
-            contractDebtValue
-        );
+        uint256 contractDebtValueInWei =
+            calculateDebtValueInWei(contractDebtValue);
         return
             snxTokenValueInWei.add(nonSnxAssetValue).sub(
                 contractDebtValueInWei
@@ -369,9 +368,8 @@ contract TradeAccounting is Ownable {
         uint256 snxBalanceOwned,
         uint256 contractDebtValueInWei
     ) internal view returns (uint256) {
-        uint256 snxTokenValueInWei = snxBalanceOwned.mul(weiPerOneSnx).div(
-            DEC_18
-        );
+        uint256 snxTokenValueInWei =
+            snxBalanceOwned.mul(weiPerOneSnx).div(DEC_18);
         uint256 nonSnxAssetValue = calculateNonSnxAssetValue();
         return
             snxTokenValueInWei.add(nonSnxAssetValue).sub(
@@ -465,12 +463,13 @@ contract TradeAccounting is Ownable {
             weiPerOneSnx = ethContributed.mul(DEC_18).div(snxContributed);
         }
 
-        uint256 pricePerToken = calculateIssueTokenPrice(
-            weiPerOneSnx,
-            snxBalanceBefore,
-            nonSnxAssetValue,
-            totalSupply
-        );
+        uint256 pricePerToken =
+            calculateIssueTokenPrice(
+                weiPerOneSnx,
+                snxBalanceBefore,
+                nonSnxAssetValue,
+                totalSupply
+            );
 
         return ethContributed.mul(DEC_18).div(pricePerToken);
     }
@@ -492,16 +491,16 @@ contract TradeAccounting is Ownable {
 
         uint256 weiPerOneSnx = getWeiPerOneSnxOnMint();
         // need to derive snx contribution in eth terms for NAV calc
-        uint256 proxyEthContribution = weiPerOneSnx.mul(snxAddedToBalance).div(
-            DEC_18
-        );
+        uint256 proxyEthContribution =
+            weiPerOneSnx.mul(snxAddedToBalance).div(DEC_18);
         uint256 nonSnxAssetValue = calculateNonSnxAssetValue();
-        uint256 pricePerToken = calculateIssueTokenPrice(
-            weiPerOneSnx,
-            snxBalanceBefore,
-            nonSnxAssetValue,
-            totalSupply
-        );
+        uint256 pricePerToken =
+            calculateIssueTokenPrice(
+                weiPerOneSnx,
+                snxBalanceBefore,
+                nonSnxAssetValue,
+                totalSupply
+            );
         return proxyEthContribution.mul(DEC_18).div(pricePerToken);
     }
 
@@ -578,9 +577,10 @@ contract TradeAccounting is Ownable {
     {
         uint256 baseSetNaturalUnit = getBaseSetNaturalUnit();
         uint256 baseSetComponentUnits = getBaseSetComponentUnits();
-        uint256 baseSetIssuable = componentQuantity.mul(baseSetNaturalUnit).div(
-            baseSetComponentUnits
-        );
+        uint256 baseSetIssuable =
+            componentQuantity.mul(baseSetNaturalUnit).div(
+                baseSetComponentUnits
+            );
 
         uint256 rebalancingSetNaturalUnit = getSetNaturalUnit();
         uint256 unitShares = getSetUnitShares();
@@ -622,11 +622,12 @@ contract TradeAccounting is Ownable {
         // expectedSetAssetRate = amount of current set asset needed to redeem for 1 sUSD
         uint256 expectedSetAssetRate = DEC_18.mul(DEC_18).div(synthUsd);
 
-        uint256 setAssetCollateralToSell = expectedSetAssetRate
-            .mul(totalSusdToBurn)
-            .div(DEC_18)
-            .mul(103) // err on the high side
-            .div(PERCENT);
+        uint256 setAssetCollateralToSell =
+            expectedSetAssetRate
+                .mul(totalSusdToBurn)
+                .div(DEC_18)
+                .mul(103) // err on the high side
+                .div(PERCENT);
 
         uint256 decimals = (TEN**ERC20Detailed(currentSetAsset).decimals());
         setAssetCollateralToSell = setAssetCollateralToSell.mul(decimals).div(
@@ -648,15 +649,13 @@ contract TradeAccounting is Ownable {
     {
         uint256 unitShares = getSetUnitShares();
         uint256 rebalancingSetNaturalUnit = getSetNaturalUnit();
-        uint256 baseSetRequired = DEC_18.mul(unitShares).div(
-            rebalancingSetNaturalUnit
-        );
+        uint256 baseSetRequired =
+            DEC_18.mul(unitShares).div(rebalancingSetNaturalUnit);
 
         uint256 unitsOfUnderlying = getBaseSetComponentUnits();
         uint256 baseSetNaturalUnit = getBaseSetNaturalUnit();
-        uint256 componentRequired = baseSetRequired.mul(unitsOfUnderlying).div(
-            baseSetNaturalUnit
-        );
+        uint256 componentRequired =
+            baseSetRequired.mul(unitsOfUnderlying).div(baseSetNaturalUnit);
 
         address currentSetAsset = getAssetCurrentlyActiveInSet();
         uint256 decimals = (TEN**ERC20Detailed(currentSetAsset).decimals());
@@ -698,8 +697,8 @@ contract TradeAccounting is Ownable {
      * @notice xSNX contracts complex only compatible with Sets that hold a single asset at a time
      */
     function getAssetCurrentlyActiveInSet() public view returns (address) {
-        address[] memory currentAllocation = getCurrentCollateralSet()
-            .getComponents();
+        address[] memory currentAllocation =
+            getCurrentCollateralSet().getComponents();
         return currentAllocation[0];
     }
 
@@ -782,19 +781,17 @@ contract TradeAccounting is Ownable {
     }
 
     function getSnxPrice() internal view returns (uint256) {
-        (uint256 rate, uint256 time) = IExchangeRates(
-            addressResolver.getAddress(exchangeRatesName)
-        )
-            .rateAndUpdatedTime(snx);
+        (uint256 rate, uint256 time) =
+            IExchangeRates(addressResolver.getAddress(exchangeRatesName))
+                .rateAndUpdatedTime(snx);
         require(time.add(RATE_STALE_TIME) > block.timestamp, "Rate stale");
         return rate;
     }
 
     function getSynthPrice(bytes32 synth) internal view returns (uint256) {
-        (uint256 rate, uint256 time) = IExchangeRates(
-            addressResolver.getAddress(exchangeRatesName)
-        )
-            .rateAndUpdatedTime(synth);
+        (uint256 rate, uint256 time) =
+            IExchangeRates(addressResolver.getAddress(exchangeRatesName))
+                .rateAndUpdatedTime(synth);
         if (synth != susd) {
             require(time.add(RATE_STALE_TIME) > block.timestamp, "Rate stale");
         }
@@ -908,12 +905,10 @@ contract TradeAccounting is Ownable {
         uint256 issuanceRatio
     ) public view returns (uint256 susdToBurn) {
         uint256 nonEscrowedSnxValue = getContractOwnedSnxValue();
-        uint256 lockedSnxValue = contractDebtValue.mul(DEC_18).div(
-            issuanceRatio
-        );
-        uint256 valueOfSnxToSell = nonEscrowedSnxValue.mul(tokensToRedeem).div(
-            totalSupply
-        );
+        uint256 lockedSnxValue =
+            contractDebtValue.mul(DEC_18).div(issuanceRatio);
+        uint256 valueOfSnxToSell =
+            nonEscrowedSnxValue.mul(tokensToRedeem).div(totalSupply);
         susdToBurn = (
             lockedSnxValue.add(valueOfSnxToSell).sub(nonEscrowedSnxValue)
         )
@@ -937,22 +932,21 @@ contract TradeAccounting is Ownable {
         uint256 debtValueInUsd = getContractDebtValue();
         uint256 issuanceRatio = getIssuanceRatio();
 
-        uint256 susdToBurnToFixRatio = calculateSusdToBurnToFixRatio(
-            snxValueHeld,
-            debtValueInUsd,
-            issuanceRatio
-        );
+        uint256 susdToBurnToFixRatio =
+            calculateSusdToBurnToFixRatio(
+                snxValueHeld,
+                debtValueInUsd,
+                issuanceRatio
+            );
 
-
-            uint256 susdToBurnToEclipseEscrowed
-         = calculateSusdToBurnToEclipseEscrowed(issuanceRatio);
+        uint256 susdToBurnToEclipseEscrowed =
+            calculateSusdToBurnToEclipseEscrowed(issuanceRatio);
 
         uint256 hedgeAssetsValueInUsd = calculateHedgeAssetsValueInUsd();
         uint256 valueToUnlockInUsd = debtValueInUsd.sub(hedgeAssetsValueInUsd);
 
-        uint256 susdToBurnToUnlockTransfer = valueToUnlockInUsd
-            .mul(issuanceRatio)
-            .div(DEC_18);
+        uint256 susdToBurnToUnlockTransfer =
+            valueToUnlockInUsd.mul(issuanceRatio).div(DEC_18);
 
         totalSusdToBurn = (
             susdToBurnToFixRatio.add(susdToBurnToEclipseEscrowed).add(
@@ -970,10 +964,8 @@ contract TradeAccounting is Ownable {
         view
         returns (uint256 setToSell)
     {
-        (
-            uint256 debtValueInWei,
-            uint256 hedgeAssetsBalance
-        ) = getRebalanceUtils();
+        (uint256 debtValueInWei, uint256 hedgeAssetsBalance) =
+            getRebalanceUtils();
         uint256 setValueToSell = hedgeAssetsBalance.sub(debtValueInWei);
         uint256 ethValueOfOneSet = calculateEthValueOfOneSetUnit();
         setToSell = setValueToSell.mul(DEC_18).div(ethValueOfOneSet);
@@ -1042,10 +1034,8 @@ contract TradeAccounting is Ownable {
      * @dev Helper function to determine whether xSNXAdmin.rebalanceTowardsSnx() is required
      */
     function isRebalanceTowardsSnxRequired() public view returns (bool) {
-        (
-            uint256 debtValueInWei,
-            uint256 hedgeAssetsBalance
-        ) = getRebalanceUtils();
+        (uint256 debtValueInWei, uint256 hedgeAssetsBalance) =
+            getRebalanceUtils();
 
         if (
             debtValueInWei.mul(REBALANCE_THRESHOLD).div(PERCENT) <
@@ -1061,10 +1051,8 @@ contract TradeAccounting is Ownable {
      * @dev Helper function to determine whether xSNXAdmin.rebalanceTowardsHedge() is required
      */
     function isRebalanceTowardsHedgeRequired() public view returns (bool) {
-        (
-            uint256 debtValueInWei,
-            uint256 hedgeAssetsBalance
-        ) = getRebalanceUtils();
+        (uint256 debtValueInWei, uint256 hedgeAssetsBalance) =
+            getRebalanceUtils();
 
         if (
             hedgeAssetsBalance.mul(REBALANCE_THRESHOLD).div(PERCENT) <
@@ -1089,10 +1077,8 @@ contract TradeAccounting is Ownable {
             address
         )
     {
-        (
-            uint256 totalSusdToBurn,
-            uint256 snxToSell
-        ) = calculateAssetChangesForRebalanceToHedge();
+        (uint256 totalSusdToBurn, uint256 snxToSell) =
+            calculateAssetChangesForRebalanceToHedge();
         address activeAsset = getAssetCurrentlyActiveInSet();
         return (totalSusdToBurn, snxToSell, activeAsset);
     }
@@ -1110,9 +1096,8 @@ contract TradeAccounting is Ownable {
     {
         uint256 ethUsd = getSynthPrice(seth);
 
-        uint256 setHoldingsInUsd = getSetHoldingsValueInWei().mul(ethUsd).div(
-            DEC_18
-        );
+        uint256 setHoldingsInUsd =
+            getSetHoldingsValueInWei().mul(ethUsd).div(DEC_18);
         uint256 ethBalInUsd = getEthBalance().mul(ethUsd).div(DEC_18);
         uint256 hedgeAssets = setHoldingsInUsd.add(ethBalInUsd);
 

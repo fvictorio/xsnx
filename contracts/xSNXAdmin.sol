@@ -14,8 +14,8 @@ import "./interface/IxSNX.sol";
 contract xSNXAdmin is Ownable {
     using SafeMath for uint256;
 
-    address
-        private constant ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    address private constant ETH_ADDRESS =
+        0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address private susdAddress;
     address private setAddress;
     address private snxAddress;
@@ -227,8 +227,8 @@ contract xSNXAdmin is Ownable {
             tradeAccounting.isRebalanceTowardsSnxRequired(),
             "Rebalance unnecessary"
         );
-        (uint256 setToSell, address activeAsset) = tradeAccounting
-            .getRebalanceTowardsSnxUtils();
+        (uint256 setToSell, address activeAsset) =
+            tradeAccounting.getRebalanceTowardsSnxUtils();
 
         _redeemRebalancingSet(setToSell);
 
@@ -280,8 +280,8 @@ contract xSNXAdmin is Ownable {
      * @param minRate: kyber.getExpectedRate(activeAsset => ETH)
      */
     function rebalanceSetToEth(uint256 minRate) external onlyOwnerOrManager {
-        uint256 redemptionQuantity = tradeAccounting
-            .calculateSetToSellForRebalanceSetToEth();
+        uint256 redemptionQuantity =
+            tradeAccounting.calculateSetToSellForRebalanceSetToEth();
         _redeemRebalancingSet(redemptionQuantity);
 
         address activeAsset = getAssetCurrentlyActiveInSet();
@@ -368,9 +368,8 @@ contract xSNXAdmin is Ownable {
      * @notice Won't be called until at least a year after deployment
      */
     function vest() public {
-        IRewardEscrow rewardEscrow = IRewardEscrow(
-            addressResolver.getAddress(rewardEscrowName)
-        );
+        IRewardEscrow rewardEscrow =
+            IRewardEscrow(addressResolver.getAddress(rewardEscrowName));
         rewardEscrow.vest();
     }
 
@@ -392,8 +391,8 @@ contract xSNXAdmin is Ownable {
             _minCurveReturn
         );
 
-        uint256 issuanceQuantity = tradeAccounting
-            .calculateSetIssuanceQuantity();
+        uint256 issuanceQuantity =
+            tradeAccounting.calculateSetIssuanceQuantity();
         rebalancingModule.issueRebalancingSet(
             setAddress,
             issuanceQuantity,
@@ -402,8 +401,8 @@ contract xSNXAdmin is Ownable {
     }
 
     function _redeemSet(uint256 _totalSusdToBurn) private {
-        uint256 redemptionQuantity = tradeAccounting
-            .calculateSetRedemptionQuantity(_totalSusdToBurn);
+        uint256 redemptionQuantity =
+            tradeAccounting.calculateSetRedemptionQuantity(_totalSusdToBurn);
         _redeemRebalancingSet(redemptionQuantity);
     }
 
